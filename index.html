@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verdant — планировщик</title>
+
+  <!-- Шрифт Space Grotesk -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Наши стили -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- слой с фоном -->
+  <div class="bg" id="bg"></div>
+
+  <!-- сцена: сюда приедет всё, что появляется после фона -->
+  <div class="scene">
+
+        <!-- Кнопка добавления -->
+    <button class="add-btn" id="addBtn" title="Добавить задачу">+</button>
+
+    <!-- Модальное окно с формой -->
+    <div class="modal" id="modal">
+      <div class="modal__overlay" id="modalOverlay"></div>
+      <form class="modal__form" id="taskForm">
+        <h2 class="modal__title">Новая задача</h2>
+
+        <label class="modal__label">
+          Название
+          <input
+            class="modal__input"
+            type="text"
+            name="title"
+            id="taskTitle"
+            placeholder="Например: купить хлеб"
+            required
+            maxlength="80"
+          >
+        </label>
+
+        <label class="modal__label">
+          Категория
+          <select class="modal__input" name="category" id="taskCategory" required>
+            <option value="health">Здоровье</option>
+            <option value="beauty">Внешность</option>
+            <option value="study">Учёба</option>
+            <option value="rest">Отдых</option>
+            <option value="home">Дом/Быт</option>
+            <option value="urgent">Важно-срочно</option>
+            <option value="important">Несрочно-важно</option>
+          </select>
+        </label>
+
+        <label class="modal__label">
+          Дата
+          <input
+            class="modal__input"
+            type="date"
+            name="date"
+            id="taskDate"
+            required
+          >
+        </label>
+
+        <div class="modal__actions">
+          <button type="button" class="modal__btn modal__btn--cancel" id="cancelBtn">Отмена</button>
+          <button type="submit" class="modal__btn modal__btn--save">Сохранить</button>
+        </div>
+      </form>
+    </div>
+
+    <header class="header">
+      <h1 class="header__title">Verdant</h1>
+      <p class="header__slogan">Планируй. Расти. Расцветай.</p>
+    </header>
+
+    <header class="header">
+      <h1 class="header__title">Verdant</h1>
+      <p class="header__slogan">Планируй. Расти. Расцветай.</p>
+    </header>
+
+    <!-- Подпись текущей недели -->
+    <div class="week-label" id="weekLabel"></div>
+
+    <main class="week" id="week">
+      <!-- столбцы остаются как есть -->
+    </main>
+
+    <!-- Стрелки по краям экрана -->
+    <button class="nav-arrow nav-arrow--prev" id="prevWeek" aria-label="Предыдущая неделя">‹</button>
+    <button class="nav-arrow nav-arrow--next" id="nextWeek" aria-label="Следующая неделя">›</button>
+
+    <!-- кнопка + и модалка — как были -->
+
+    <main class="week" id="week">
+      <div class="week__column" data-day="1">
+        <span class="week__day-name">Пн</span>
+        <div class="week__tasks"></div>
+      </div>
+      <div class="week__column" data-day="2">
+        <span class="week__day-name">Вт</span>
+        <div class="week__tasks"></div>
+      </div>
+      <div class="week__column" data-day="3">
+        <span class="week__day-name">Ср</span>
+        <div class="week__tasks"></div>
+      </div>
+      <div class="week__column" data-day="4">
+        <span class="week__day-name">Чт</span>
+        <div class="week__tasks"></div>
+      </div>
+      <div class="week__column" data-day="5">
+        <span class="week__day-name">Пт</span>
+        <div class="week__tasks"></div>
+      </div>
+      <div class="week__column" data-day="6">
+        <span class="week__day-name">Сб</span>
+        <div class="week__tasks"></div>
+      </div>
+      <div class="week__column" data-day="7">
+        <span class="week__day-name">Вс</span>
+        <div class="week__tasks"></div>
+      </div>
+    </main>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

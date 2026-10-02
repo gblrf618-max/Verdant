@@ -1,0 +1,447 @@
+/* ===== Переменные ===== */
+:root {
+  --color-bg: #eef3ec;
+  --color-text: #2f3a2f;
+  --color-text-soft: #6b7a6b;
+  --radius-lg: 32px;
+  --radius-md: 20px;
+  --gap: 16px;
+
+  --font-main: 'Space Grotesk', system-ui, sans-serif;
+}
+
+/* ===== Сброс ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-main);
+  color: var(--color-text);
+  background: var(--color-bg);
+  min-height: 100vh;
+  padding: 32px 24px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== Шапка ===== */
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.header__title {
+  font-size: 42px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.header__slogan {
+  margin-top: 6px;
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--color-text-soft);
+}
+
+/* ===== Контейнер недели (пока пустой) ===== */
+.week {
+  max-width: 1400px;
+  margin: 0 auto;
+  min-height: 200px;
+}
+
+/* ===== Фон-слой ===== */
+.bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(135deg, #cfe7cd, #f7d6e0);
+
+  /* стартовое состояние: размыт и прозрачен */
+  opacity: 0;
+  filter: blur(40px);
+  transition: opacity 1.6s ease, filter 1.6s ease;
+}
+
+/* когда скрипт добавит класс .bg--visible — фон плавно проявится */
+.bg--visible {
+  opacity: 1;
+  filter: blur(0);
+}
+
+/* ===== Сцена: стартовое состояние ===== */
+/* ===== Сцена: стартовое состояние ===== */
+.scene {
+  /* сдвиг на высоту экрана — столбцы прячутся ПОД нижний край */
+  transform: translateY(100vh);
+  opacity: 0;
+  transition:
+    transform 1.6s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.9s ease;
+}
+
+.scene--visible {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* ===== Сетка недели ===== */
+.week {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--gap);
+  align-items: start;
+}
+
+/* ===== Столбец-капсула ===== */
+.week__column {
+  height: 600px;
+  background: rgba(255, 255, 255, 0.55);
+  border-radius: var(--radius-lg);
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 20px rgba(47, 58, 47, 0.04);
+}
+
+/* ===== Подпись дня ===== */
+.week__day-name {
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-soft);
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* ===== Контейнер для задач внутри дня ===== */
+.week__tasks {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.week__tasks::-webkit-scrollbar {
+  width: 4px;
+}
+.week__tasks::-webkit-scrollbar-thumb {
+  background: rgba(47, 58, 47, 0.15);
+  border-radius: 4px;
+}
+
+/* ===== Виджет задачи ===== */
+.task {
+  padding: 10px 12px;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text);
+  cursor: pointer;
+  user-select: none;
+
+  /* появление: чуть-чуть выезжает и проявляется */
+  opacity: 0;
+  transform: translateY(8px);
+  animation: task-appear 0.35s ease forwards;
+  transition: background 0.3s ease, transform 0.15s ease;
+}
+
+.task:hover {
+  transform: translateY(-1px);
+}
+
+.task__title {
+  display: block;
+  line-height: 1.3;
+  word-break: break-word;
+}
+
+@keyframes task-appear {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* ===== Кнопка «+» ===== */
+.add-btn {
+  position: fixed;
+  right: 32px;
+  bottom: 32px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-text);
+  color: #fff;
+  font-size: 28px;
+  font-weight: 300;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(47, 58, 47, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  z-index: 100;
+}
+
+.add-btn:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 12px 28px rgba(47, 58, 47, 0.35);
+}
+
+.add-btn:active {
+  transform: scale(0.96);
+}
+
+/* ===== Модальное окно ===== */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: none;                 /* скрыто по умолчанию */
+  align-items: center;
+  justify-content: center;
+}
+
+.modal--open {
+  display: flex;
+}
+
+.modal__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(47, 58, 47, 0.35);
+  backdrop-filter: blur(4px);
+  animation: fade-in 0.25s ease;
+}
+
+.modal__form {
+  position: relative;
+  background: #fbfdf9;
+  border-radius: var(--radius-md);
+  padding: 28px 26px;
+  width: min(420px, 92vw);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18);
+  animation: modal-pop 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.modal__title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.modal__label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-soft);
+}
+
+.modal__input {
+  font-family: var(--font-main);
+  font-size: 15px;
+  padding: 10px 12px;
+  border: 1px solid rgba(47, 58, 47, 0.15);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--color-text);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.modal__input:focus {
+  border-color: var(--color-text);
+  box-shadow: 0 0 0 3px rgba(47, 58, 47, 0.08);
+}
+
+.modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.modal__btn {
+  font-family: var(--font-main);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.2s ease;
+}
+
+.modal__btn--cancel {
+  background: rgba(47, 58, 47, 0.08);
+  color: var(--color-text);
+}
+
+.modal__btn--cancel:hover {
+  background: rgba(47, 58, 47, 0.14);
+}
+
+.modal__btn--save {
+  background: var(--color-text);
+  color: #fff;
+}
+
+.modal__btn--save:hover {
+  transform: translateY(-1px);
+}
+
+.modal__btn:active {
+  transform: scale(0.97);
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes modal-pop {
+  from { opacity: 0; transform: translateY(20px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+
+/* ===== Выполненная задача ===== */
+
+.task--done .task__title {
+  text-decoration: line-through;
+  text-decoration-thickness: 1.5px;
+  color: var(--color-text-soft);
+  opacity: 0.75;
+}
+
+/* ===== Виджет: относительное позиционирование для крестика ===== */
+.task {
+  position: relative;
+  padding-right: 28px;   /* освобождаем место под крестик */
+}
+
+/* ===== Крестик удаления ===== */
+.task__delete {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  color: var(--color-text);
+  font-size: 14px;
+  line-height: 1;
+  font-family: var(--font-main);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease, background 0.2s ease, transform 0.15s ease;
+}
+
+/* показываем крестик при наведении на виджет */
+.task:hover .task__delete {
+  opacity: 1;
+}
+
+.task__delete:hover {
+  background: rgba(255, 255, 255, 0.95);
+  transform: scale(1.1);
+}
+
+/* ===== Инлайн-редактирование ===== */
+.task__edit {
+  width: 100%;
+  font-family: var(--font-main);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text);
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(47, 58, 47, 0.15);
+  border-radius: 8px;
+  padding: 4px 6px;
+  outline: none;
+}
+
+.task__edit:focus {
+  border-color: var(--color-text);
+  background: #fff;
+}
+
+/* ===== Подпись недели ===== */
+.week-label {
+  max-width: 1400px;
+  margin: 0 auto 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-soft);
+  letter-spacing: 0.02em;
+}
+
+/* ===== Стрелки навигации ===== */
+.nav-arrow {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 56px;
+  height: 96px;
+  border: none;
+  background: rgba(255, 255, 255, 0.4);
+  color: var(--color-text);
+  font-size: 34px;
+  font-weight: 300;
+  font-family: var(--font-main);
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 20px;
+  backdrop-filter: blur(8px);
+  z-index: 90;
+
+  /* по умолчанию — невидимы */
+  opacity: 0;
+  transition: opacity 0.3s ease, background 0.2s ease, transform 0.2s ease;
+}
+
+.nav-arrow--prev { left: 16px; }
+.nav-arrow--next { right: 16px; }
+
+.nav-arrow:hover {
+  background: rgba(255, 255, 255, 0.85);
+}
+
+/* появление при наведении мыши на край экрана */
+.nav-arrow--visible {
+  opacity: 1;
+}
+
+/* === Зоны наведения по краям экрана === */
+.nav-zone {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 60px;
+  z-index: 80;
+}
+.nav-zone--left  { left: 0; }
+.nav-zone--right { right: 0; }
