@@ -1,14 +1,13 @@
 // ===== Категории =====
 const categories = {
-  rest:      { name: 'Отдых',          color: '#E8E2CE' },
-  home:      { name: 'Дом/Быт',        color: '#E0C97A' },
-  study:     { name: 'Учёба',          color: '#F5B71E' },
-  health:    { name: 'Здоровье',       color: '#FFA500' },
-  beauty:    { name: 'Внешность',      color: '#FF8C42' },
-  important: { name: 'Несрочно-важно', color: '#F2D027' },
-  urgent:    { name: 'Важно-срочно',   color: '#FFEF8A' }
+  health:    { name: 'Здоровье',       color: '#5bad8b' },
+  beauty:    { name: 'Внешность',      color: '#87395c' },
+  study:     { name: 'Учёба',          color: '#475fa3' },
+  rest:      { name: 'Отдых',          color: '#705ea4' },
+  home:      { name: 'Дом/Быт',        color: '#ab6a47' },
+  urgent:    { name: 'Важно-срочно',   color: '#e8d175' },
+  important: { name: 'Несрочно-важно', color: '#a64a23' }
 };
-
 // ===== Хранилище =====
 const STORAGE_KEY = 'verdant-data';
 
@@ -125,54 +124,48 @@ function renderTask(task) {
   }
 
   // Позиция и высота по времени
+  let heightPx = 0;
   if (task.startTime && task.endTime) {
     const startMinutes = timeToMinutes(task.startTime);
     const endMinutes = timeToMinutes(task.endTime);
     const dayStartMin = DAY_START_HOUR * 60;
 
     const topPx = ((startMinutes - dayStartMin) / 60) * PX_PER_HOUR;
-    const heightPx = Math.max(((endMinutes - startMinutes) / 60) * PX_PER_HOUR, 26);
+    heightPx = Math.max(((endMinutes - startMinutes) / 60) * PX_PER_HOUR, 26);
 
     widget.style.top = topPx + 'px';
     widget.style.height = heightPx + 'px';
 
-    const time = document.createElement('span');
-    time.className = 'task__time';
-    time.textContent = `${task.startTime} — ${task.endTime}`;
-    widget.appendChild(time);
+    // Плашку времени показываем ТОЛЬКО если задача выше 45px (≈45 мин)
+    if (heightPx >= 50) {
+      const time = document.createElement('span');
+      time.className = 'task__time';
+      time.textContent = `${task.startTime} — ${task.endTime}`;
+      widget.appendChild(time);
+    } else {
+      // на коротких — короткий маркер-класс
+      widget.classList.add('task--short');
+    }
   } else {
     widget.style.top = '8px';
   }
 
+  // Название
   const title = document.createElement('span');
   title.className = 'task__title';
   title.textContent = task.title;
   widget.appendChild(title);
 
-  // Пояснение + стрелочка
-  if (task.note) {
+   // Пояснение — только если задача ≥ 60 минут (60px высоты)
+  const isLongEnough = task.startTime && task.endTime && heightPx >= 60;
+  if (task.note && isLongEnough) {
     const note = document.createElement('div');
     note.className = 'task__note';
     note.textContent = task.note;
     widget.appendChild(note);
-
-    const toggle = document.createElement('button');
-    toggle.className = 'task__expand';
-    toggle.type = 'button';
-    toggle.textContent = '⌄';
-    toggle.title = 'Показать/скрыть пояснение';
-    widget.appendChild(toggle);
-
-    toggle.addEventListener('click', (e) => {
-      e.stopPropagation();
-      widget.classList.toggle('task--expanded');
-      toggle.style.transform = widget.classList.contains('task--expanded')
-        ? 'rotate(180deg)'
-        : 'rotate(0deg)';
-    });
   }
 
-  // Кнопки в правом верхнем углу: карандаш + крестик
+  // Кнопки в углу
   const actions = document.createElement('div');
   actions.className = 'task__actions';
 
@@ -196,7 +189,6 @@ function renderTask(task) {
   widget.addEventListener('click', (e) => {
     if (e.target.closest('.task__delete')) return;
     if (e.target.closest('.task__edit-btn')) return;
-    if (e.target.closest('.task__expand')) return;
     if (e.target.closest('.task__note')) return;
     if (e.target.closest('.task__edit')) return;
     toggleTask(task.id);
@@ -358,23 +350,106 @@ function renderTimeScale() {
 function applyWeekBackground(offset) {
   const bg = document.getElementById('bg');
   if (!bg) return;
+
   const backgrounds = [
-    { bg: `radial-gradient(circle at 20% 30%, rgba(255,224,102,0.06), transparent 40%), radial-gradient(circle at 80% 70%, rgba(255,165,0,0.05), transparent 45%), linear-gradient(160deg, #16150F 0%, #0B0A08 100%)`, size: 'auto, auto, cover' },
-    { bg: `repeating-linear-gradient(45deg, rgba(255,255,255,0.02) 0 2px, transparent 2px 14px), linear-gradient(180deg, #0F0E0C 0%, #17140E 100%)`, size: 'auto, cover' },
-    { bg: `radial-gradient(rgba(255,224,102,0.07) 1px, transparent 1.5px), linear-gradient(200deg, #12110C 0%, #0A0A08 100%)`, size: '22px 22px, cover' },
-    { bg: `radial-gradient(ellipse at 50% 0%, rgba(245,183,30,0.12), transparent 55%), linear-gradient(180deg, #14120C 0%, #0A0A08 100%)`, size: 'auto, cover' },
-    { bg: `radial-gradient(ellipse at 100% 50%, rgba(255,140,66,0.12), transparent 50%), linear-gradient(120deg, #0A0A08 0%, #15120C 100%)`, size: 'auto, cover' },
-    { bg: `repeating-linear-gradient(0deg, rgba(255,255,255,0.015) 0 1px, transparent 1px 9px), linear-gradient(220deg, #13110C 0%, #0B0A08 100%)`, size: 'auto, cover' },
-    { bg: `radial-gradient(circle at 30% 20%, rgba(255,239,138,0.10), transparent 35%), radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1.4px), linear-gradient(180deg, #0E0D0B 0%, #050504 100%)`, size: 'auto, 26px 26px, cover' }
+    // 0. Тёплое янтарное сияние — с тонкой диагональной текстурой
+    {
+      bg: `
+        radial-gradient(ellipse 80% 60% at 20% 30%, rgba(255, 224, 102, 0.15), transparent 60%),
+        radial-gradient(ellipse 70% 50% at 80% 70%, rgba(255, 165, 0, 0.10), transparent 65%),
+        radial-gradient(ellipse 60% 40% at 50% 100%, rgba(245, 183, 30, 0.08), transparent 60%),
+        repeating-linear-gradient(135deg, rgba(255, 224, 102, 0.02) 0 1px, transparent 1px 20px),
+        linear-gradient(160deg, #1A1813 0%, #0A0A08 100%)
+      `,
+      size: 'auto, auto, auto, auto, cover',
+      repeat: 'no-repeat, no-repeat, no-repeat, repeat, no-repeat'
+    },
+
+    // 1. Холодный синий туман — с тонкими горизонтальными волнами
+    {
+      bg: `
+        radial-gradient(ellipse 90% 70% at 70% 20%, rgba(120, 180, 220, 0.12), transparent 60%),
+        radial-gradient(ellipse 60% 80% at 20% 80%, rgba(80, 120, 180, 0.10), transparent 65%),
+        repeating-linear-gradient(0deg, rgba(120, 180, 220, 0.025) 0 1px, transparent 1px 28px),
+        linear-gradient(180deg, #0E1015 0%, #0A0B0F 100%)
+      `,
+      size: 'auto, auto, auto, cover',
+      repeat: 'no-repeat, no-repeat, repeat, no-repeat'
+    },
+
+    // 2. Фиолетовое сияние снизу — с мягким «свечением» из центра
+    {
+      bg: `
+        radial-gradient(ellipse 100% 60% at 50% 100%, rgba(160, 120, 200, 0.15), transparent 60%),
+        radial-gradient(ellipse 50% 40% at 80% 20%, rgba(120, 100, 180, 0.08), transparent 65%),
+        radial-gradient(circle at 50% 50%, rgba(160, 120, 200, 0.04), transparent 40%),
+        linear-gradient(200deg, #100E15 0%, #0A0A0F 100%)
+      `,
+      size: 'auto, auto, auto, cover',
+      repeat: 'no-repeat, no-repeat, no-repeat, no-repeat'
+    },
+
+    // 3. Тёплое свечение сверху — с тонкой сеткой (утро)
+    {
+      bg: `
+        radial-gradient(ellipse 80% 50% at 50% 0%, rgba(255, 200, 100, 0.14), transparent 55%),
+        radial-gradient(ellipse 60% 50% at 20% 50%, rgba(255, 165, 0, 0.08), transparent 65%),
+        repeating-linear-gradient(90deg, rgba(255, 200, 100, 0.02) 0 1px, transparent 1px 24px),
+        repeating-linear-gradient(0deg, rgba(255, 200, 100, 0.02) 0 1px, transparent 1px 24px),
+        linear-gradient(180deg, #18140E 0%, #0A0907 100%)
+      `,
+      size: 'auto, auto, auto, auto, cover',
+      repeat: 'no-repeat, no-repeat, repeat, repeat, no-repeat'
+    },
+
+    // 4. Изумрудные всполохи — с лёгким звёздным шумом
+    {
+      bg: `
+        radial-gradient(ellipse 70% 60% at 80% 30%, rgba(100, 180, 140, 0.10), transparent 60%),
+        radial-gradient(ellipse 80% 50% at 20% 70%, rgba(80, 150, 120, 0.08), transparent 65%),
+        radial-gradient(circle at 60% 100%, rgba(120, 200, 160, 0.06), transparent 45%),
+        radial-gradient(rgba(150, 220, 180, 0.04) 1px, transparent 1.5px),
+        linear-gradient(140deg, #0E1412 0%, #080A09 100%)
+      `,
+      size: 'auto, auto, auto, 28px 28px, cover',
+      repeat: 'no-repeat, no-repeat, no-repeat, repeat, no-repeat'
+    },
+
+    // 5. Розово-персиковый закат — с тонкими диагональными линиями
+    {
+      bg: `
+        radial-gradient(ellipse 90% 60% at 50% 100%, rgba(255, 160, 130, 0.12), transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 30%, rgba(230, 130, 160, 0.08), transparent 65%),
+        repeating-linear-gradient(45deg, rgba(255, 160, 130, 0.02) 0 1px, transparent 1px 22px),
+        linear-gradient(200deg, #16100F 0%, #0A0808 100%)
+      `,
+      size: 'auto, auto, auto, cover',
+      repeat: 'no-repeat, no-repeat, repeat, no-repeat'
+    },
+
+    // 6. Тёмная синева — со звёздной пылью двух размеров
+    {
+      bg: `
+        radial-gradient(circle at 30% 25%, rgba(140, 180, 255, 0.10), transparent 45%),
+        radial-gradient(circle at 75% 70%, rgba(100, 140, 220, 0.06), transparent 50%),
+        radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1.5px),
+        radial-gradient(rgba(200, 220, 255, 0.03) 0.5px, transparent 1px),
+        linear-gradient(180deg, #0A0C12 0%, #050507 100%)
+      `,
+      size: 'auto, auto, 32px 32px, 18px 18px, cover',
+      repeat: 'no-repeat, no-repeat, repeat, repeat, no-repeat'
+    }
   ];
-  const idx = ((offset % backgrounds.length) + backgrounds.length) % backgrounds.length;
+
+   const idx = ((offset % backgrounds.length) + backgrounds.length) % backgrounds.length;
   const chosen = backgrounds[idx];
+
   bg.style.background = chosen.bg;
   bg.style.backgroundSize = chosen.size;
   bg.style.backgroundPosition = 'center';
-  bg.style.backgroundRepeat = 'no-repeat, repeat';
+  bg.style.backgroundRepeat = chosen.repeat;
+  bg.style.backgroundAttachment = 'fixed';
 }
-
 // ===== Рендер всей недели =====
 function renderAll() {
   const weekEl = document.getElementById('week');
