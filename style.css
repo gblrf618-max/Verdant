@@ -280,10 +280,22 @@ body {
 }
 
 /* Крестик */
-.task__delete {
+/* ===== Кнопки в углу задачи: карандаш + крестик ===== */
+.task__actions {
   position: absolute;
   top: 4px;
   right: 4px;
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.task:hover .task__actions {
+  opacity: 1;
+}
+
+.task__edit-btn,
+.task__delete {
   width: 18px;
   height: 18px;
   padding: 0;
@@ -291,17 +303,20 @@ body {
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.1);
   color: var(--color-text);
-  font-size: 12px;
+  font-size: 11px;
+  line-height: 1;
   font-family: var(--font-main);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0;
-  transition: opacity 0.2s ease, background 0.2s ease, transform 0.15s ease;
+  transition: background 0.2s ease, transform 0.15s ease;
 }
-.task:hover .task__delete { opacity: 1; }
-.task__delete:hover { background: rgba(255, 255, 255, 0.2); transform: scale(1.1); }
+.task__edit-btn:hover,
+.task__delete:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.1);
+}
 
 /* Редактирование */
 .task__edit {
@@ -455,6 +470,15 @@ body {
   justify-content: center;
 }
 .modal--open { display: flex; }
+
+.modal__btn--delete {
+  background: rgba(255, 107, 107, 0.15);
+  color: var(--color-danger);
+  margin-right: auto;    /* прижимает влево */
+}
+.modal__btn--delete:hover {
+  background: rgba(255, 107, 107, 0.25);
+}
 
 .modal__overlay {
   position: absolute;

@@ -34,6 +34,7 @@ let tasks = loadTasks();
 let weekOffset = 0;
 let viewMode = 'week';
 let focusedDay = 1;
+let editingTaskId = null;    // null = создание новой, id = редактируем
 
 // ===== Параметры сетки =====
 const DAY_START_HOUR = 7;
@@ -171,25 +172,46 @@ function renderTask(task) {
     });
   }
 
-  // Крестик удаления
+  // Кнопки в правом верхнем углу: карандаш + крестик
+  const actions = document.createElement('div');
+  actions.className = 'task__actions';
+
+  const edit = document.createElement('button');
+  edit.className = 'task__edit-btn';
+  edit.type = 'button';
+  edit.textContent = '✎';
+  edit.title = 'Редактировать';
+  actions.appendChild(edit);
+
   const del = document.createElement('button');
   del.className = 'task__delete';
   del.type = 'button';
   del.textContent = '×';
-  widget.appendChild(del);
+  del.title = 'Удалить';
+  actions.appendChild(del);
+
+  widget.appendChild(actions);
 
   // Обработчики
   widget.addEventListener('click', (e) => {
     if (e.target.closest('.task__delete')) return;
-    if (e.target.closest('.task__edit')) return;
+    if (e.target.closest('.task__edit-btn')) return;
     if (e.target.closest('.task__expand')) return;
     if (e.target.closest('.task__note')) return;
+    if (e.target.closest('.task__edit')) return;
     toggleTask(task.id);
   });
+
+  edit.addEventListener('click', (e) => {
+    e.stopPropagation();
+    openEditModal(task.id);
+  });
+
   del.addEventListener('click', (e) => {
     e.stopPropagation();
     deleteTask(task.id);
   });
+
   title.addEventListener('dblclick', (e) => {
     e.stopPropagation();
     startEdit(widget, title, task.id);
@@ -430,10 +452,37 @@ const form = document.getElementById('taskForm');
 const dateInput = document.getElementById('taskDate');
 
 function openModal() {
+  editingTaskId = null;
+  document.querySelector('.modal__title').textContent = 'Новая задача';
+  document.getElementById('taskDeleteBtn').style.display = 'none';
+
   const today = new Date().toISOString().slice(0, 10);
   dateInput.value = today;
   document.getElementById('taskStart').value = '09:00';
   document.getElementById('taskEnd').value = '10:00';
+  document.getElementById('taskTitle').value = '';
+  document.getElementById('taskNote').value = '';
+  document.getElementById('taskCategory').value = 'health';
+
+  modal.classList.add('modal--open');
+  document.getElementById('taskTitle').focus();
+}
+
+function openEditModal(id) {
+  const task = tasks.find(t => t.id === id);
+  if (!task) return;
+
+  editingTaskId = id;
+  document.querySelector('.modal__title').textContent = 'Редактировать задачу';
+  document.getElementById('taskDeleteBtn').style.display = 'inline-block';
+
+  document.getElementById('taskTitle').value = task.title;
+  document.getElementById('taskCategory').value = task.category;
+  document.getElementById('taskDate').value = task.date;
+  document.getElementById('taskStart').value = task.startTime || '09:00';
+  document.getElementById('taskEnd').value = task.endTime || '10:00';
+  document.getElementById('taskNote').value = task.note || '';
+
   modal.classList.add('modal--open');
   document.getElementById('taskTitle').focus();
 }
@@ -443,34 +492,61 @@ function closeModal() {
   form.reset();
 }
 
+function deleteFromModal() {
+  if (!editingTaskId) return;
+  if (!confirm('Удалить задачу?')) return;
+  const id = editingTaskId;
+  editingTaskId = null;
+  deleteTask(id);
+  closeModal();
+}
+
 if (addBtn) addBtn.addEventListener('click', openModal);
 if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
 if (overlay) overlay.addEventListener('click', closeModal);
+
+const deleteBtn = document.getElementById('taskDeleteBtn');
+if (deleteBtn) deleteBtn.addEventListener('click', deleteFromModal);
 
 if (form) {
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const formData = new FormData(form);
-    const newTask = {
-      id: makeId(),
+
+    const data = {
       title: formData.get('title').trim(),
       category: formData.get('category'),
       date: formData.get('date'),
       startTime: formData.get('startTime'),
       endTime: formData.get('endTime'),
-      note: (formData.get('note') || '').trim(),
-      completed: false
+      note: (formData.get('note') || '').trim()
     };
 
-    if (!newTask.title) return;
+    if (!data.title) return;
 
-    if (timeToMinutes(newTask.endTime) <= timeToMinutes(newTask.startTime)) {
+    if (timeToMinutes(data.endTime) <= timeToMinutes(data.startTime)) {
       alert('Время конца должно быть позже начала');
       return;
     }
 
-    tasks.push(newTask);
-    saveTasks(tasks);
+    if (editingTaskId) {
+      // обновляем существующую
+      const task = tasks.find(t => t.id === editingTaskId);
+      if (task) {
+        Object.assign(task, data);
+        saveTasks(tasks);
+      }
+    } else {
+      // создаём новую
+      const newTask = {
+        id: makeId(),
+        ...data,
+        completed: false
+      };
+      tasks.push(newTask);
+      saveTasks(tasks);
+    }
+
     renderAll();
     closeModal();
   });
