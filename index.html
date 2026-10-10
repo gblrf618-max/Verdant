@@ -18,13 +18,68 @@
   <!-- слой с фоном -->
   <div class="bg" id="bg"></div>
 
-  <!-- сцена: сюда приедет всё, что появляется после фона -->
+  <!-- сцена -->
   <div class="scene">
 
-        <!-- Кнопка добавления -->
+    <header class="header">
+      <h1 class="header__title">Verdant</h1>
+      <p class="header__slogan">Планируй. Расти. Расцветай.</p>
+    </header>
+
+    <!-- подпись текущей недели -->
+    <div class="week-label" id="weekLabel"></div>
+
+    <!-- календарь: шкала + сетка недели -->
+    <div class="calendar" id="calendar">
+
+      <!-- шкала времени слева -->
+      <div class="time-scale" id="timeScale"></div>
+
+      <!-- сетка недели -->
+      <main class="week" id="week">
+        <div class="week__column" data-day="1">
+          <span class="week__day-name">Пн</span>
+          <div class="week__tasks"></div>
+        </div>
+        <div class="week__column" data-day="2">
+          <span class="week__day-name">Вт</span>
+          <div class="week__tasks"></div>
+        </div>
+        <div class="week__column" data-day="3">
+          <span class="week__day-name">Ср</span>
+          <div class="week__tasks"></div>
+        </div>
+        <div class="week__column" data-day="4">
+          <span class="week__day-name">Чт</span>
+          <div class="week__tasks"></div>
+        </div>
+        <div class="week__column" data-day="5">
+          <span class="week__day-name">Пт</span>
+          <div class="week__tasks"></div>
+        </div>
+        <div class="week__column" data-day="6">
+          <span class="week__day-name">Сб</span>
+          <div class="week__tasks"></div>
+        </div>
+        <div class="week__column" data-day="7">
+          <span class="week__day-name">Вс</span>
+          <div class="week__tasks"></div>
+        </div>
+      </main>
+
+    </div>
+
+    <!-- стрелки по краям -->
+    <button class="nav-arrow nav-arrow--prev" id="prevWeek" aria-label="Предыдущая неделя">‹</button>
+    <button class="nav-arrow nav-arrow--next" id="nextWeek" aria-label="Следующая неделя">›</button>
+
+    <!-- кнопка выхода из режима дня -->
+    <button class="day-close" id="dayClose" aria-label="Закрыть">×</button>
+
+    <!-- кнопка добавления -->
     <button class="add-btn" id="addBtn" title="Добавить задачу">+</button>
 
-    <!-- Модальное окно с формой -->
+    <!-- модальное окно -->
     <div class="modal" id="modal">
       <div class="modal__overlay" id="modalOverlay"></div>
       <form class="modal__form" id="taskForm">
@@ -67,66 +122,47 @@
           >
         </label>
 
+                <label class="modal__label">
+          Время начала
+          <input
+            class="modal__input"
+            type="time"
+            name="startTime"
+            id="taskStart"
+            required
+            value="09:00"
+          >
+        </label>
+
+        <label class="modal__label">
+          Время конца
+          <input
+            class="modal__input"
+            type="time"
+            name="endTime"
+            id="taskEnd"
+            required
+            value="10:00"
+          >
+        </label>
+                <label class="modal__label">
+          Пояснение <span style="opacity: 0.6">(необязательно)</span>
+          <textarea
+            class="modal__input modal__input--textarea"
+            name="note"
+            id="taskNote"
+            rows="3"
+            maxlength="300"
+            placeholder="Детали, заметки, что взять с собой..."
+          ></textarea>
+        </label>
+
         <div class="modal__actions">
           <button type="button" class="modal__btn modal__btn--cancel" id="cancelBtn">Отмена</button>
           <button type="submit" class="modal__btn modal__btn--save">Сохранить</button>
         </div>
       </form>
     </div>
-
-    <header class="header">
-      <h1 class="header__title">Verdant</h1>
-      <p class="header__slogan">Планируй. Расти. Расцветай.</p>
-    </header>
-
-    <header class="header">
-      <h1 class="header__title">Verdant</h1>
-      <p class="header__slogan">Планируй. Расти. Расцветай.</p>
-    </header>
-
-    <!-- Подпись текущей недели -->
-    <div class="week-label" id="weekLabel"></div>
-
-    <main class="week" id="week">
-      <!-- столбцы остаются как есть -->
-    </main>
-
-    <!-- Стрелки по краям экрана -->
-    <button class="nav-arrow nav-arrow--prev" id="prevWeek" aria-label="Предыдущая неделя">‹</button>
-    <button class="nav-arrow nav-arrow--next" id="nextWeek" aria-label="Следующая неделя">›</button>
-
-    <!-- кнопка + и модалка — как были -->
-
-    <main class="week" id="week">
-      <div class="week__column" data-day="1">
-        <span class="week__day-name">Пн</span>
-        <div class="week__tasks"></div>
-      </div>
-      <div class="week__column" data-day="2">
-        <span class="week__day-name">Вт</span>
-        <div class="week__tasks"></div>
-      </div>
-      <div class="week__column" data-day="3">
-        <span class="week__day-name">Ср</span>
-        <div class="week__tasks"></div>
-      </div>
-      <div class="week__column" data-day="4">
-        <span class="week__day-name">Чт</span>
-        <div class="week__tasks"></div>
-      </div>
-      <div class="week__column" data-day="5">
-        <span class="week__day-name">Пт</span>
-        <div class="week__tasks"></div>
-      </div>
-      <div class="week__column" data-day="6">
-        <span class="week__day-name">Сб</span>
-        <div class="week__tasks"></div>
-      </div>
-      <div class="week__column" data-day="7">
-        <span class="week__day-name">Вс</span>
-        <div class="week__tasks"></div>
-      </div>
-    </main>
 
   </div>
 
