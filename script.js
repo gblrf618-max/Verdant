@@ -510,16 +510,6 @@ document.addEventListener('keydown', (e) => {
 });
 
 function setupNavZones() {
-  const leftZone = document.createElement('div');
-  const rightZone = document.createElement('div');
-  leftZone.className = 'nav-zone nav-zone--left';
-  rightZone.className = 'nav-zone nav-zone--right';
-  document.body.appendChild(leftZone);
-  document.body.appendChild(rightZone);
-  leftZone.addEventListener('mouseenter', () => prevBtn.classList.add('nav-arrow--visible'));
-  leftZone.addEventListener('mouseleave', () => prevBtn.classList.remove('nav-arrow--visible'));
-  rightZone.addEventListener('mouseenter', () => nextBtn.classList.add('nav-arrow--visible'));
-  rightZone.addEventListener('mouseleave', () => nextBtn.classList.remove('nav-arrow--visible'));
 }
 
 function setupColumnClicks() {
