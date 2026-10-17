@@ -64,25 +64,27 @@ body {
 /* ===== Шапка ===== */
 .header { text-align: center; margin-bottom: 40px; }
 .header__title {
-  font-size: 42px;
+  font-size: 44px;
   font-weight: 600;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
   color: var(--color-text);
 }
 .header__slogan {
-  margin-top: 6px;
-  font-size: 15px;
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
   color: var(--color-text-soft);
 }
-
 /* ===== Подпись недели ===== */
 .week-label {
   max-width: 1400px;
   margin: 0 auto 20px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: var(--color-text-soft);
-  letter-spacing: 0.02em;
 }
 
 /* ===== Календарь: шкала + неделя ===== */
@@ -93,6 +95,7 @@ body {
   grid-template-columns: 48px minmax(0, 1fr);
   gap: 12px;
   align-items: start;
+  position: relative;
 }
 
 /* ===== Шкала времени ===== */
@@ -101,10 +104,11 @@ body {
   height: 960px;
   margin-top: 40px;
   font-size: 11px;
-  color: var(--color-text-soft);
+  color: rgba(255, 255, 255, 0.35);    /* ← светлее */
   font-weight: 500;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.05em;              /* ← разряженнее */
 }
+
 .time-scale__item {
   position: absolute;
   left: 0;
@@ -120,33 +124,41 @@ body {
   grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: var(--gap);
   align-items: start;
+  position: relative;
+  padding-top: 0;
 }
 
-/* ===== Столбец ===== */
-.week__column {
-  position: relative;
-  height: 960px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: 8px 6px;
-  backdrop-filter: blur(12px);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
-  overflow: hidden;
-  margin-top: 40px;
-}
-.week__column::before {
+/* Общая сетка часов — горизонтальные линии через всю ширину недели */
+.week::before {
   content: '';
   position: absolute;
-  inset: 0;
+  left: 0;
+  right: 0;
+  top: 40px;          /* отступ = margin-top столбцов */
+  height: 960px;
   pointer-events: none;
   background: repeating-linear-gradient(
     to bottom,
     transparent 0 59px,
-    rgba(255, 255, 255, 0.04) 59px 60px
+    rgba(255, 255, 255, 0.05) 59px 60px
   );
-  border-radius: inherit;
+  z-index: 0;
 }
+/* ===== Столбец ===== */
+.week__column {
+  position: relative;
+  height: 960px;
+  background: rgba(255, 255, 255, 0.02);    /* ← прозрачнее */
+  border: none;                             /* ← убираем границу */
+  border-radius: 16px;                      /* ← мягче скругление */
+  padding: 0;
+  margin-top: 40px;
+  overflow: visible;                        /* ← важно: пусть выходит за пределы */
+  backdrop-filter: none;
+  box-shadow: none;
+  z-index: 1;                               /* ← над сеткой */
+}
+
 
 /* ===== Подпись дня ===== */
 .week__day-name {
@@ -154,19 +166,21 @@ body {
   top: -32px;
   left: 0;
   right: 0;
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 11px;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.18em;    /* ← разряженнее */
   color: var(--color-text-soft);
   text-align: center;
 }
+
 
 /* ===== Контейнер задач ===== */
 .week__tasks {
   position: absolute;
   inset: 0;
   pointer-events: none;
+  z-index: 2;
 }
 
 /* ===== Виджет задачи ===== */
@@ -198,6 +212,7 @@ body {
   transform: translateY(4px);
   animation: task-appear 0.35s ease forwards;
   transition: background 0.3s ease, transform 0.15s ease, border-color 0.3s ease;
+   z-index: 3;
 }
 .task::before {
   content: '';
@@ -224,12 +239,14 @@ body {
 
 .task__time {
   display: block;
-  font-size: 10px;
-  font-weight: 500;
-  color: var(--color-text-soft);
-  margin-bottom: 2px;
-  letter-spacing: 0.02em;
+  font-size: 9.5px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.55);
+  margin-bottom: 3px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
+
 .task__title {
   display: block;
   line-height: 1.25;
